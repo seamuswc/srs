@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRS Card Manager</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.3.4/dist/web3.min.js"></script> 
+</head>
+
+<body>
+
+    <div class="column responsive-content">
+        <div class="field">
+            <button class="button is-primary mt-4" id="connectWalletButton">Connect to Selected Network</button> 
+            <div class="content mt-4">
+                Connected Network: <span id="networkConnected">Not connected</span><br>
+                Connected Address: <span id="walletAddress">Not connected</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Individual Card -->
+    <div>
+        <h2>Add Individual Card</h2>
+        <label>Category: <input id="category" type="text"></label><br>
+        <label>Front: <input id="front" type="text"></label><br>
+        <label>Back: <input id="back" type="text"></label><br>
+        <button onclick="addCard()">Add Card</button>
+    </div>
+
+    <!-- Mass Add Cards -->
+    <div>
+        <h2>Mass Add Cards</h2>
+        <label>Category: <input id="massCategory" type="text"></label><br>
+        <label>Fronts (comma-separated): </label><textarea id="massFronts"> </textarea> <br>
+        <label>Backs (comma-separated): </label><textarea id="massBacks">   </textarea> <br>
+        <button onclick="massAddCards()">Mass Add Cards</button>
+    </div>
+
+    <script src="srs.js"></script>
+
+
+</body>
+
+</html>
