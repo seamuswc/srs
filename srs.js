@@ -20,13 +20,14 @@ $(document).ready(function() {
         loadCardsForCategory($(this).val());
     });
 
-    $(document).on('click', '#flipButton', function() {
-        $("#cardFront, #cardBack").toggle();
+ 
+    $("#flipButton").on('click', function() {
+        flipCard();
     });
-    
-    $(document).on('click', '#nextButton', async function() {
-        const category = $('#categorySelector').val();
-        await loadCardsForCategory(category);
+
+
+    $("#nextButton").on('click', async function() {
+        nextCard();
     });
     
     $('#addCard').on('click', function() {
@@ -38,7 +39,30 @@ $(document).ready(function() {
     });
 
 
+    let press = 0;
+    $(document).keydown(function(e) {
+        if (e.which == 32) { // 32 is the key code for spacebar
+            e.preventDefault(); // Prevent the default action
+            if(press == 0) {
+                flipCard();
+                press++;
+            } else {
+                nextCard();
+                press--;
+            }
+        }
+    });
+
 });
+
+function flipCard() {
+    $("#cardFront, #cardBack").toggle();
+}
+
+async function nextCard() {
+    const category = $('#categorySelector').val();
+    await loadCardsForCategory(category);
+}
 
 
 async function connectWallet() {
