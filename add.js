@@ -87,7 +87,7 @@ async function connectWallet() {
 
 
 async function addCard() {
-    const category = document.getElementById('category').value;
+    const category = document.getElementById('category').value.trim();
     const front = document.getElementById('front').value;
     const back = document.getElementById('back').value;
 
@@ -107,7 +107,7 @@ async function addCard() {
 }
 
 async function massAddCards() {
-    const category = document.getElementById('massCategory').value;
+    const category = document.getElementById('massCategory').value.trim();
     const fronts = document.getElementById('massFronts').value.split(',');
     const backs = document.getElementById('massBacks').value.split(',');
 
