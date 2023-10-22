@@ -1,183 +1,6 @@
-//import { contract } from './abi.js';
-const contract = {
-    scroll: '0xae0AC53f617C19b84DADBb5FECbdc9238aee25bd', //scroll address l2
-    abi: [
-        {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "_category",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "_front",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "_back",
-                    "type": "string"
-                }
-            ],
-            "name": "addCard",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "_category",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string[]",
-                    "name": "_fronts",
-                    "type": "string[]"
-                },
-                {
-                    "internalType": "string[]",
-                    "name": "_backs",
-                    "type": "string[]"
-                }
-            ],
-            "name": "addMultipleCards",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "stateMutability": "nonpayable",
-            "type": "constructor"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "name": "categories",
-            "outputs": [
-                {
-                    "internalType": "string",
-                    "name": "front",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "back",
-                    "type": "string"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "name": "categoryNames",
-            "outputs": [
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "_category",
-                    "type": "string"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "index",
-                    "type": "uint256"
-                }
-            ],
-            "name": "getCard",
-            "outputs": [
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "_category",
-                    "type": "string"
-                }
-            ],
-            "name": "getCardCountInCategory",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "getCategoryNames",
-            "outputs": [
-                {
-                    "internalType": "string[]",
-                    "name": "",
-                    "type": "string[]"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "owner",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        }
-    ]
-    
-    };//send
+import { contract } from './abi.js';
+
+console.log(contract);
 
 let contractAddress;
 let contractABI;
@@ -196,7 +19,25 @@ $(document).ready(function() {
         console.log("jquery: ", $(this).val());
         loadCardsForCategory($(this).val());
     });
+
+    $(document).on('click', '#flipButton', function() {
+        $("#cardFront, #cardBack").toggle();
+    });
     
+    $(document).on('click', '#nextButton', async function() {
+        const category = $('#categorySelector').val();
+        await loadCardsForCategory(category);
+    });
+    
+    $('#addCard').on('click', function() {
+        addCard();
+    });
+
+    $('#massAddCards').on('click', function() {
+        massAddCards();
+    });
+
+
 });
 
 
@@ -211,6 +52,7 @@ async function connectWallet() {
             // Fetching the network name
             const netId = await web3.eth.net.getId();
             let networkName;
+            let network;
             switch(netId) {
                 /*case 1: 
                     networkName = 'Ethereum'; 
@@ -274,30 +116,43 @@ async function populateCategories() {
    
 }
 
+async function increaseCardCount(category) {
+    let count = await srsContract.methods.getCardCountInCategory(category).call();
+    if(currentCardIndex < (count - 1)) {
+        currentCardIndex++;
+    } else {
+        currentCardIndex = 0;
+    }
+
+}
+
+let currentCardIndex = 0;
+
 async function loadCardsForCategory(category) {
     const $cardsContainer = $('#cardsContainer');
-    $cardsContainer.empty(); // Clear previous cards
+    $cardsContainer.empty(); // Clear previous card
 
-    const cardCount = await srsContract.methods.getCardCountInCategory(category).call();
-    console.log("card count", cardCount);
-    for (let i = 0; i < cardCount; i++) {
-        const card = await srsContract.methods.getCard(category, i).call();
-        console.log(card);
-        const cardElement = `
-            <div class="column is-one-third">
-                <div class="card">
-                    <header class="card-header">
-                        <p class="card-header-title is-centered is-size-4">${card[0]}</p>
-                    </header>
-                    <div class="card-content">
-                    <p class="card-header-title is-centered is-size-4">${card[1]}</p>
-                    </div>
+    const card = await srsContract.methods.getCard(category, currentCardIndex).call();
+    console.log(card);
+    const cardElement = `
+        <div class="column is-one-third">
+            <div class="card" id="srsCard">
+            
+                <div class="card-content">
+                    <p class="card-header-title is-centered is-size-4" id="cardFront">${card[0]}</p>
                 </div>
+                <div class="card-content">
+                    <p class="card-header-title is-centered is-size-4" id="cardBack">${card[1]}</p>
+                </div>
+
             </div>
-        `;
-        $cardsContainer.append(cardElement);
-    }
+        </div>
+    `;
+    $cardsContainer.append(cardElement);
+    increaseCardCount(category);
+    $("#cardBack").hide();
 }
+
 
 
 

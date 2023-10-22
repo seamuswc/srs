@@ -28,7 +28,7 @@
         <label>Category: <input id="category" type="text"></label><br>
         <label>Front: <input id="front" type="text"></label><br>
         <label>Back: <input id="back" type="text"></label><br>
-        <button onclick="addCard()">Add Card</button>
+        <button id="addCard">Add Card</button>
     </div>
 
     <!-- Mass Add Cards -->
@@ -37,10 +37,10 @@
         <label>Category: <input id="massCategory" type="text"></label><br>
         <label>Fronts (comma-separated): </label><textarea id="massFronts"> </textarea> <br>
         <label>Backs (comma-separated): </label><textarea id="massBacks">   </textarea> <br>
-        <button onclick="massAddCards()">Mass Add Cards</button>
+        <button id="massAddCards">Mass Add Cards</button>
     </div>
 
-    <script src="srs.js"></script>
+    <script src="srs.js" type="module"></script>
 
 
 </body>

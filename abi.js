@@ -1,4 +1,4 @@
-const contract = {
+export const contract = {
 
     scroll: '0xae0AC53f617C19b84DADBb5FECbdc9238aee25bd', //scroll address l2
 
