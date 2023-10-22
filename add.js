@@ -15,20 +15,7 @@ $(document).ready(function() {
     });
 
     
-    $('#categorySelector').on('change', function() {
-        console.log("jquery: ", $(this).val());
-        loadCardsForCategory($(this).val());
-    });
-
- 
-    $("#flipButton").on('click', function() {
-        flipCard();
-    });
-
-
-    $("#nextButton").on('click', async function() {
-        nextCard();
-    });
+   
     
     $('#addCard').on('click', function() {
         addCard();
@@ -39,30 +26,9 @@ $(document).ready(function() {
     });
 
 
-    let press = 0;
-    $(document).keydown(function(e) {
-        if (e.which == 32) { // 32 is the key code for spacebar
-            e.preventDefault(); // Prevent the default action
-            if(press == 0) {
-                flipCard();
-                press++;
-            } else {
-                nextCard();
-                press--;
-            }
-        }
-    });
 
 });
 
-function flipCard() {
-    $("#cardFront, #cardBack").toggle();
-}
-
-async function nextCard() {
-    const category = $('#categorySelector').val();
-    await loadCardsForCategory(category);
-}
 
 
 async function connectWallet() {
@@ -103,7 +69,7 @@ async function connectWallet() {
             contractABI = contract['abi']; // Replace with your contract's ABI
             srsContract = new web3.eth.Contract(contractABI, contractAddress);
             $('#networkConnected').text(networkName);
-            populateCategories();
+            //populateCategories();
 
 
         } catch (error) {
@@ -116,66 +82,6 @@ async function connectWallet() {
     
 }
 
-
-
-// Function to get category names and populate the dropdown
-async function populateCategories() {
-    const categoryNames = await srsContract.methods.getCategoryNames().call();
-    const $categorySelector = $('#categorySelector');
-    console.log("populate ", categoryNames);
-    categoryNames.forEach(category => {
-        //console.log("populate: ", value, " ", text, " ", category);
-        const option = $('<option>', {
-            value: category,
-            text: category
-        });
-
-        $categorySelector.append(option);
-    });
-
-    // Load cards for the first category by default
-    console.log(categoryNames[0]);
-    loadCardsForCategory(categoryNames[0]);
-    
-   
-}
-
-async function increaseCardCount(category) {
-    let count = await srsContract.methods.getCardCountInCategory(category).call();
-    if(currentCardIndex < (count - 1)) {
-        currentCardIndex++;
-    } else {
-        currentCardIndex = 0;
-    }
-
-}
-
-let currentCardIndex = 0;
-
-async function loadCardsForCategory(category) {
-    const $cardsContainer = $('#cardsContainer');
-    $cardsContainer.empty(); // Clear previous card
-
-    const card = await srsContract.methods.getCard(category, currentCardIndex).call();
-    console.log(card);
-    const cardElement = `
-        <div class="column is-one-third">
-            <div class="card" id="srsCard">
-            
-                <div class="card-content">
-                    <p class="card-header-title is-centered is-size-4" id="cardFront">${card[0]}</p>
-                </div>
-                <div class="card-content">
-                    <p class="card-header-title is-centered is-size-4" id="cardBack">${card[1]}</p>
-                </div>
-
-            </div>
-        </div>
-    `;
-    $cardsContainer.append(cardElement);
-    increaseCardCount(category);
-    $("#cardBack").hide();
-}
 
 
 
